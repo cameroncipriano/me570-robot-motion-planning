@@ -4,10 +4,13 @@ Classes and functions for Polygons and Edges
 
 import math
 import numpy as np
+import matplotlib.pyplot as plt
+from numpy.core.numeric import ones
 
 
 class Polygon:
     """ Class for plotting, drawing, checking visibility and collision with polygons. """
+
     def __init__(self, vertices):
         """
         Save the input coordinates to the internal attribute  vertices.
@@ -25,7 +28,36 @@ class Polygon:
         """
         Plot the polygon using Matplotlib.
         """
-        pass  # Substitute with your code
+
+        """
+        To obtain the directions of the arrows needed, we can take the displacement of each vertex
+        to itself. This requires an np.diff() with itself, calculating out[i] = a[i+1] - a[i], and
+        then concatenating the last vertex - the first.
+        """
+
+        displacement = np.hstack((np.diff(
+            self.vertices), (self.vertices[:, 0] - self.vertices[:, -1]).reshape(2, 1)))
+
+        x_values = self.vertices[0, :]
+        print(f"X-Values:\n{x_values}")
+
+        y_values = self.vertices[1, :]
+        print(f"Y-Values:\n{y_values}")
+
+        x_displacement = displacement[0, :]
+        y_displacement = displacement[1, :]
+
+        ax = plt.axes()
+        ax.set_facecolor('dimgray')
+        plt.fill_between(x_values, y_values, color='white')
+        plt.quiver(x_values, y_values, x_displacement,
+                   y_displacement, scale=1, scale_units='xy', angles='xy', color='black')
+        # color = style
+
+        # print(f"Verticies: \n{self.vertices}")
+        # print(f"Displacements: \n{displacement}")
+
+        plt.show()
 
     def is_filled(self):
         """
@@ -68,6 +100,7 @@ class Polygon:
 
 class Edge:
     """ Class for storing edges and checking collisions among them. """
+
     def __init__(self, vertices):
         """
         Save the input coordinates to the internal attribute  vertices.

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" type="text/css" href="homework1.css">
+</head>
+<body>
+<h1>me570_geometry.py</h1>
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes and functions for Polygons and Edges</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+
+<span class="k">class</span> <span class="nc">Polygon</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Class for plotting, drawing, checking visibility and collision with polygons. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the input coordinates to the internal attribute  vertices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span>
+
+    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reverse the order of the vertices (i.e., transform the polygon from filled in</span>
+<span class="sd">        to hollow and viceversa).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the polygon using Matplotlib.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+
+    <span class="k">def</span> <span class="nf">is_filled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks the ordering of the vertices, and returns whether the polygon is filled in or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+        <span class="k">return</span> <span class="n">flag</span>
+
+    <span class="k">def</span> <span class="nf">is_self_occcluded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx_vertex</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given the corner of a polygon, checks whether a given point is self-occluded or not by</span>
+<span class="sd">        that polygon (i.e., if it is ``inside&#39;&#39; the corner&#39;s cone or not). Points on boundary</span>
+<span class="sd">        (i.e., on one of the sides of the corner) are not considered self-occluded. Note that</span>
+<span class="sd">        to check self-occlusion, we just need a vertex index  idx_vertex. From this, one can</span>
+<span class="sd">        obtain the corresponding  vertex, and the  vertex_prev and  vertex_next that precede</span>
+<span class="sd">        and follow that vertex in the polygon.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+        <span class="k">return</span> <span class="n">flag_point</span>
+
+    <span class="k">def</span> <span class="nf">is_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx_vertex</span><span class="p">,</span> <span class="n">test_points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether a point p is visible from a vertex v of a polygon. In order to be visible,</span>
+<span class="sd">        two conditions need to be satisfied: enumerate  point p should not be self-occluded with</span>
+<span class="sd">        respect to the vertex v (see Polygon.is_self_occluded). The segment p--v should not collide</span>
+<span class="sd">        with any of the edges of the polygon (see Edge.is_collision).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+        <span class="k">return</span> <span class="n">flag_points</span>
+
+    <span class="k">def</span> <span class="nf">is_collision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the a point is in collsion with a polygon (that is, inside for a filled in</span>
+<span class="sd">        polygon, and outside for a hollow polygon). In the context of this homework, this function</span>
+<span class="sd">        is best implemented using Polygon.is_visible.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+        <span class="k">return</span> <span class="n">flag_points</span>
+
+
+<span class="k">class</span> <span class="nc">Edge</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Class for storing edges and checking collisions among them. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the input coordinates to the internal attribute  vertices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span>
+
+    <span class="k">def</span> <span class="nf">is_collision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns  True if the two edges intersect.  Note: if the two edges overlap but are colinear,</span>
+<span class="sd">        or they overlap only at a single endpoint, they are not considered as intersecting (i.e.,</span>
+<span class="sd">        in these cases the function returns  False). If one of the two edges has zero length, the</span>
+<span class="sd">        function should always return the result that edges are non-intersecting.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+
+
+<span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="n">vertex0</span><span class="p">,</span> <span class="n">vertex1</span><span class="p">,</span> <span class="n">vertex2</span><span class="p">,</span> <span class="n">angle_type</span><span class="o">=</span><span class="s1">&#39;signed&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the angle between two edges  vertex0-vertex1 and  vertex0-vertex2 having an endpoint in</span>
+<span class="sd">    common. The angle is computed by starting from the edge  vertex0-- vertex1, and then</span>
+<span class="sd">    ``walking&#39;&#39; in a counterclockwise manner until the edge  vertex0-vertex2 is found.</span>
+<span class="sd">    The angle is computed by starting from the vertex0-vertex1 edge, and then “walking” in a</span>
+<span class="sd">    counterclockwise manner until the is found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># tolerance to check for coincident points</span>
+    <span class="n">tol</span> <span class="o">=</span> <span class="mf">2.22e-16</span>
+
+    <span class="c1"># compute vectors corresponding to the two edges, and normalize</span>
+    <span class="n">vec1</span> <span class="o">=</span> <span class="n">vertex1</span> <span class="o">-</span> <span class="n">vertex0</span>
+    <span class="n">vec2</span> <span class="o">=</span> <span class="n">vertex2</span> <span class="o">-</span> <span class="n">vertex0</span>
+
+    <span class="n">norm_vec1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec1</span><span class="p">)</span>
+    <span class="n">norm_vec2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">norm_vec1</span> <span class="o">&lt;</span> <span class="n">tol</span> <span class="ow">or</span> <span class="n">norm_vec2</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+        <span class="c1"># vertex1 or vertex2 coincides with vertex0, abort</span>
+        <span class="n">edge_angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">return</span> <span class="n">edge_angle</span>
+
+    <span class="n">vec1</span> <span class="o">=</span> <span class="n">vec1</span> <span class="o">/</span> <span class="n">norm_vec1</span>
+    <span class="n">vec2</span> <span class="o">=</span> <span class="n">vec2</span> <span class="o">/</span> <span class="n">norm_vec2</span>
+
+    <span class="c1"># Transform vec1 and vec2 into flat 3-D vectors,</span>
+    <span class="c1"># so that they can be used with np.inner and np.cross</span>
+    <span class="n">vec1flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">vec1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">vec2flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">vec2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="n">c_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">vec1flat</span><span class="p">,</span> <span class="n">vec2flat</span><span class="p">)</span>
+    <span class="n">s_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">vec1flat</span><span class="p">,</span> <span class="n">vec2flat</span><span class="p">))</span>
+
+    <span class="n">edge_angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">s_angle</span><span class="p">,</span> <span class="n">c_angle</span><span class="p">)</span>
+
+    <span class="n">angle_type</span> <span class="o">=</span> <span class="n">angle_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">angle_type</span> <span class="o">==</span> <span class="s1">&#39;signed&#39;</span><span class="p">:</span>
+        <span class="c1"># nothing to do</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">angle_type</span> <span class="o">==</span> <span class="s1">&#39;unsigned&#39;</span><span class="p">:</span>
+        <span class="n">edge_angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">modf</span><span class="p">(</span><span class="n">edge_angle</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid argument angle_type&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">edge_angle</span>
+</pre></div>
+
+<h1>me570_robot.py</h1>
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Representation of a simple robot used in the assignments</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">me570_geometry</span> <span class="k">as</span> <span class="nn">gm</span>
+
+
+<span class="k">class</span> <span class="nc">TwoLink</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; A class containing methods for a two-link manipulator. &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">add_y_reflection</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">vertices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">vertices</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vertices</span><span class="p">))])</span>
+
+        <span class="n">vertices1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.11</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.511</span><span class="p">]])</span>
+        <span class="n">vertices1</span> <span class="o">=</span> <span class="n">add_y_reflection</span><span class="p">(</span><span class="n">vertices1</span><span class="p">)</span>
+        <span class="n">vertices2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">3.97</span><span class="p">,</span> <span class="mf">4.17</span><span class="p">,</span> <span class="mf">5.38</span><span class="p">,</span> <span class="mf">5.61</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">],</span>
+                              <span class="p">[</span><span class="o">-</span><span class="mf">0.47</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.97</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.313</span><span class="p">]])</span>
+        <span class="n">vertices2</span> <span class="o">=</span> <span class="n">add_y_reflection</span><span class="p">(</span><span class="n">vertices2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Polygons</span> <span class="o">=</span> <span class="p">(</span><span class="n">gm</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices1</span><span class="p">),</span> <span class="n">gm</span><span class="o">.</span><span class="n">Polygon</span><span class="p">(</span><span class="n">vertices2</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">polygons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns two polygons that represent the links in a simple 2-D two-link manipulator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Polygons</span>
+</pre></div>
+
+<h1>me570_queue.py</h1>
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A pedagogical implementation of a priority queue</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">PriorityElement</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Store a key and a value about an element of the queue. &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stores the arguments as internal attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+
+
+<span class="k">class</span> <span class="nc">Priority</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Implements a priority queue &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the internal attribute  queue to be an empty list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+
+    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">cost</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an element to the queue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+
+    <span class="k">def</span> <span class="nf">min_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract the element with minimum cost from the queue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+        <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">cost</span>
+
+    <span class="k">def</span> <span class="nf">is_member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether an element with a given key is in the queue or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+        <span class="k">return</span> <span class="n">flag</span>
+</pre></div>
+
+<h1>me570_hw1.py</h1>
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test functions for HW1</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">polygon_is_visible_test</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function should perform the following operations:</span>
+<span class="sd"> - Create an array  test_points with dimensions [2 x 5] containing points generated uniformly at</span>
+<span class="sd">random using np.random.rand and scaled to approximately occupy the rectangle [0,5] [-2,2] (i.e., the</span>
+<span class="sd">x coordinates of the points should fall between 0 and 5, while the y coordinates between -2 and 2).</span>
+<span class="sd"> - Obtain the polygons  polygon1 and  polygon2 from Two_Link.Polygons.</span>
+<span class="sd"> - item:test-polygon For each polygon  polygon1,  polygon2, display a separate figure using the</span>
+<span class="sd">following:</span>
+<span class="sd"> - Create the array  test_points_with_polygon by concatenating  test_points with the coordinates of</span>
+<span class="sd">the polygon (i.e., the coordinates of the polygon become also test points).</span>
+<span class="sd"> - Plot the polygon (use Polygon.plot).</span>
+<span class="sd"> - item:test-visibility For each vertex v in the polygon:</span>
+<span class="sd"> - Compute the visibility of each point in  test_points_with_polygon with respect to that polygon</span>
+<span class="sd">(using Polygon.is_visible).</span>
+<span class="sd"> - Plot lines from the vertex v to each point in  test_points_with_polygon in green if the</span>
+<span class="sd">corresponding point is visible, and in red otherwise.</span>
+<span class="sd"> - Reverse the order of the vertices in the two polygons using Polygon.flip.</span>
+<span class="sd"> - Repeat item item:test-polygon above with the reversed polygons.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+
+
+<span class="k">def</span> <span class="nf">polygon_is_collision_test</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is the same as polygon_is_visible_test, but use</span>
+<span class="sd">the following:</span>
+<span class="sd"> - Compute whether each point in  test_points_with_polygon is in collision with the polygon or not</span>
+<span class="sd">using Polygon.is_collision.</span>
+<span class="sd"> - Plot each point in  test_points_with_polygon in green if it is not in collision, and red</span>
+<span class="sd">otherwise.  Moreover, increase the number of test points from 5 to 100 (i.e.,  testPoints should</span>
+<span class="sd">have dimension [2 x 100]).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+
+
+<span class="k">def</span> <span class="nf">priority_test</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The function should perform the following steps:  enumerate</span>
+<span class="sd"> - Initialize an empty queue.</span>
+<span class="sd"> - Add three elements (as shown in Table~tab:priority-test-inputs and in that order) to that queue.</span>
+<span class="sd"> - Extract a minimum element.</span>
+<span class="sd"> - Add another element (as shown in Table~tab:priority-test-inputs).</span>
+<span class="sd"> - Check if an element is present.</span>
+<span class="sd"> - Remove all elements by repeated extractions.  enumerate After each step, display the content of</span>
+<span class="sd">pQueue.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>  <span class="c1"># Substitute with your code</span>
+</pre></div>
+
+</body>
+</html>
