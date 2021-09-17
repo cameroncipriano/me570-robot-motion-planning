@@ -8,12 +8,18 @@ import matplotlib.pyplot as plt
 
 
 def no_edge_collisions(polygon, edge_to_check):
+    """
+    This function ensures that an inputted edge does not intersect with any of the
+    edges of the polygon.
+    Returns True if no intersection found, False otherwise
+    """
     edge_shape = []
     num_cols = polygon.vertices.shape[1]
 
     for i in range(num_cols):
         new_edge = np.vstack(
-            (polygon.vertices[:, i], polygon.vertices[:, (i+1) % num_cols])).T
+            (polygon.vertices[:, i], polygon.vertices[:,
+                                                      (i + 1) % num_cols])).T
         edge_shape.append(Edge(new_edge))
 
     for edge in edge_shape:
@@ -23,18 +29,22 @@ def no_edge_collisions(polygon, edge_to_check):
     return True
 
 
-def between_segment(p1, p2, p3):
-    p1_x = p1[0, 0]
-    p1_y = p1[1, 0]
+def between_segment(first, middle, last):
+    """
+    Function determines whether point p_2 lies along the segment designated by p_1
+    and p_2
+    """
+    first_x = first[0, 0]
+    first_y = first[1, 0]
 
-    p2_x = p2[0, 0]
-    p2_y = p2[1, 0]
+    middle_x = middle[0, 0]
+    middle_y = middle[1, 0]
 
-    p3_x = p3[0, 0]
-    p3_y = p3[1, 0]
+    last_x = last[0, 0]
+    last_y = last[1, 0]
 
-    return (p2_x >= min(p1_x, p3_x) and (p2_x <= max(p1_x, p3_x)) and
-            (p2_y >= min(p1_y, p3_y) and p2_y <= max(p1_y, p3_y)))
+    return bool((min(first_x, last_x) <= middle_x <= max(first_x, last_x))
+                and (min(first_y, last_y) <= middle_y <= max(first_y, last_y)))
 
 
 def angle(vertex0, vertex1, vertex2, angle_type='signed'):
@@ -86,7 +96,6 @@ def angle(vertex0, vertex1, vertex2, angle_type='signed'):
 
 class Polygon:
     """ Class for plotting, drawing, checking visibility and collision with polygons. """
-
     def __init__(self, vertices):
         """
         Save the input coordinates to the internal attribute  vertices.
@@ -105,14 +114,13 @@ class Polygon:
         Plot the polygon using Matplotlib.
         """
 
-        """
-        To obtain the directions of the arrows needed, we can take the displacement of each vertex
-        to itself. This requires an np.diff() with itself, calculating out[i] = a[i+1] - a[i], and
-        then concatenating the last vertex - the first.
-        """
+        # To obtain the directions of the arrows needed, we can take the displacement of each vertex
+        # to itself. This requires an np.diff() with itself, calculating out[i] = a[i+1] - a[i], and
+        # then concatenating the last vertex - the first.
 
-        displacement = np.hstack((np.diff(
-            self.vertices), (self.vertices[:, 0] - self.vertices[:, -1]).reshape(2, 1)))
+        displacement = np.hstack(
+            (np.diff(self.vertices),
+             (self.vertices[:, 0] - self.vertices[:, -1]).reshape(2, 1)))
 
         x_values = self.vertices[0, :]
         y_values = self.vertices[1, :]
@@ -120,26 +128,25 @@ class Polygon:
         x_displacement = displacement[0, :]
         y_displacement = displacement[1, :]
 
-        # if not self.is_filled():
-        #     ax = plt.axes()
-        #     ax.set_facecolor('dimgray')
-        #     plt.fill_between(x_values, y_values, color='white')
-        # else:
-        #     plt.fill_between(x_values, y_values, color='dimgray')
-
-        plt.quiver(x_values, y_values, x_displacement,
-                   y_displacement, scale=1, scale_units='xy', angles='xy', color='black')
-        # color = style
-
-        # plt.show()
+        plt.quiver(x_values,
+                   y_values,
+                   x_displacement,
+                   y_displacement,
+                   scale=1,
+                   scale_units='xy',
+                   angles='xy',
+                   color='black')
+        bool(style)
 
     def is_filled(self):
         """
         Checks the ordering of the vertices, and returns whether the polygon is filled in or not.
         """
 
-        # Iteratres over the columns of the 2D Matrix to perform the calculation sum((x_2 - x_1) * (y_2 + y_1))
-        # If the sum is negative, then the polygon is oriented counter-clockwise, clockwise otherwise.
+        # Iteratres over the columns of the 2D Matrix to perform the calculation
+        # sum((x_2 - x_1) * (y_2 + y_1))
+        # If the sum is negative, then the polygon is oriented counter-clockwise,
+        # clockwise otherwise.
         num_cols = self.vertices.shape[1]
         running_sum = 0
 
@@ -151,9 +158,7 @@ class Polygon:
             running_sum += (x_vals[(i+1) % num_cols] - x_vals[i]) * \
                 (y_vals[i] + y_vals[(i+1) % num_cols])
 
-        flag = True if running_sum < 0 else False
-
-        return flag
+        return bool(running_sum < 0)
 
     def is_self_occcluded(self, idx_vertex, point):
         """
@@ -169,80 +174,78 @@ class Polygon:
         # if idx_vertex == 0, -1 in python refers to the last so it works
         prev_vertex = np.vstack(self.vertices[:, idx_vertex - 1])
         vertex = np.vstack(self.vertices[:, idx_vertex])
-        # if idx is the end, we need to loop around to the beginning, defined by the number of columns
-        next_vertex = np.vstack(self.vertices[:,
-                                              (idx_vertex + 1) % self.vertices.shape[1]])
+        # if idx is the end, we need to loop around to the beginning
+        next_vertex = np.vstack(self.vertices[:, (idx_vertex + 1) %
+                                              self.vertices.shape[1]])
 
         # Ensure the vertices are all different
-        if (np.array_equal(prev_vertex, vertex) or np.array_equal(next_vertex, vertex)):
+        if (np.array_equal(prev_vertex, vertex)
+                or np.array_equal(next_vertex, vertex)):
             return False
 
         # Solid Case
-        """
-            GOAL: If orientation hits prev_vertex first, we are self-occluded
-            Compute signed angle between prev and next vertex:
-                case 1: signed angle is negative
-                    compute signed angle from prev -> point
-                    if the sign negative:
-                        if angle is >= first_angle then it's occluded
-                        else good
-                    if the sign is positive:
-                        good
+        # GOAL: If orientation hits prev_vertex first, we are self-occluded
+        # Compute signed angle between prev and next vertex:
+        #     case 1: signed angle is negative
+        #         compute signed angle from prev -> point
+        #         if the sign negative:
+        #             if angle is >= first_angle then it's occluded
+        #             else good
+        #         if the sign is positive:
+        #             good
 
+        #     case 2: signed angle is positive
+        #         compute signed angle from prev -> point
+        #         if the sign is positive:
+        #             angle is <= first_angle, then good
+        #             else occluded
+        #         if the sign is negative:
+        #             occluded
 
-                case 2: signed angle is positive
-                    compute signed angle from prev -> point
-                    if the sign is positive:
-                        angle is <= first_angle, then good
-                        else occluded
-                    if the sign is negative:
-                        occluded
-
-        """
         prev_next_angle = angle(vertex, prev_vertex, next_vertex)
         prev_point_angle = angle(vertex, prev_vertex, point)
 
         flag_point = False
 
         if solid:
-            if (prev_next_angle < 0):
-                if (prev_point_angle < 0):
+            if prev_next_angle < 0:
+                if prev_point_angle < 0:
                     flag_point = prev_point_angle >= prev_next_angle
                 else:
                     flag_point = False
             else:
-                if (prev_point_angle > 0):
+                if prev_point_angle > 0:
                     flag_point = prev_point_angle > prev_next_angle
                 else:
                     flag_point = True
         else:
             # Hollow Case
-            """
-            GOAL: If orientation hits prev_vertex first, we are self-occluded
-            Compute the signed angle between prev and the next vertex:
-                case 1: signed angle is positive:
-                    compute signed angle from prev -> point
-                    if the sign is positive:
-                        angle <= first_angle, good
-                        else, self-occluded
-                    if the sign is negative:
-                        self-occluded
 
-                case 2: signed angle is negative:
-                    compute the signed angle from prev -> point
-                    if the sign is negative:
-                        angle > first_angle, self-occluded
-                        else, good
-                    if the sign is positive:
-                        good
-            """
-            if (prev_next_angle > 0):
-                if (prev_point_angle > 0):
+            # GOAL: If orientation hits prev_vertex first, we are self-occluded
+            # Compute the signed angle between prev and the next vertex:
+            #     case 1: signed angle is positive:
+            #         compute signed angle from prev -> point
+            #         if the sign is positive:
+            #             angle <= first_angle, good
+            #             else, self-occluded
+            #         if the sign is negative:
+            #             self-occluded
+
+            #     case 2: signed angle is negative:
+            #         compute the signed angle from prev -> point
+            #         if the sign is negative:
+            #             angle > first_angle, self-occluded
+            #             else, good
+            #         if the sign is positive:
+            #             good
+
+            if prev_next_angle > 0:
+                if prev_point_angle > 0:
                     flag_point = prev_point_angle > prev_next_angle
                 else:
                     flag_point = True
             else:
-                if (prev_point_angle < 0):
+                if prev_point_angle < 0:
                     flag_point = prev_point_angle > prev_next_angle
                 else:
                     flag_point = False
@@ -263,7 +266,8 @@ class Polygon:
         for point in test_points.T:
             point = np.vstack(point)
             edge_to_check = Edge(np.hstack((vertex, point)))
-            if (not self.is_self_occcluded(idx_vertex, point) and no_edge_collisions(self, edge_to_check)):
+            if (not self.is_self_occcluded(idx_vertex, point)
+                    and no_edge_collisions(self, edge_to_check)):
                 flag_points.append(True)
             else:
                 flag_points.append(False)
@@ -296,7 +300,6 @@ class Polygon:
 
 class Edge:
     """ Class for storing edges and checking collisions among them. """
-
     def __init__(self, vertices):
         """
         Save the input coordinates to the internal attribute vertices.
@@ -312,55 +315,52 @@ class Edge:
         """
 
         # Check to make sure the edge isn't length 0
-        if (np.linalg.norm(np.diff(edge.vertices) == 0)):
+        if np.linalg.norm(np.diff(edge.vertices) == 0):
             return False
 
         # swap vertices to use diff
-        swap_vertices = edge.vertices
-        swap_vertices[:, [1, 0]] = swap_vertices[:, [0, 1]]
+        edge.vertices[:, [1, 0]] = edge.vertices[:, [0, 1]]
 
-        A_matrix = np.hstack((np.diff(self.vertices), np.diff(swap_vertices)))
+        matrix = np.hstack((np.diff(self.vertices), np.diff(edge.vertices)))
 
-        p1 = np.vstack(self.vertices[:, 0])
-        p2 = np.vstack(self.vertices[:, 1])
+        p_1 = np.vstack(self.vertices[:, 0])
+        p_2 = np.vstack(self.vertices[:, 1])
 
-        p3 = np.vstack(edge.vertices[:, 0])
-        p4 = np.vstack(edge.vertices[:, 1])
+        p_3 = np.vstack(edge.vertices[:, 0])
+        p_4 = np.vstack(edge.vertices[:, 1])
 
         # Lines are collinear and can be tested for overlap vs parallelism
-        if (np.linalg.det(A_matrix) == 0):
-            if (between_segment(p1, p3, p2) or
-                    between_segment(p1, p4, p2) or
-                    between_segment(p3, p1, p4) or
-                    between_segment(p3, p2, p4)):
+        if np.linalg.det(matrix) == 0:
+            if between_segment(p_1, p_3, p_2) or between_segment(
+                    p_3, p_1, p_4) or between_segment(
+                        p_1, p_4, p_2) or between_segment(p_3, p_2, p_4):
                 return False
-            else:
-                return True
+            return True
 
-        b = p3 - p1
-
-        segment_timings = np.linalg.solve(A_matrix, b)
+        segment_timings = np.linalg.solve(matrix, p_3 - p_1)
         segment_1_t = abs(segment_timings[0, 0])
         segment_2_u = abs(segment_timings[1, 0])
 
         tol = 2.22e-16
         # Cases for times:
-        t_is_endpoint = (segment_1_t == 0 or segment_1_t == -1*tol or segment_1_t ==
-                         tol) or (segment_1_t == 1-tol or segment_1_t == 1 or segment_1_t == 1+tol)
-        t_on_segment = segment_1_t >= (-1 * tol) and segment_1_t <= 1 + tol
+        t_is_endpoint = segment_1_t in (0, -1 * tol,
+                                        tol) or segment_1_t in (1 - tol, 1,
+                                                                1 + tol)
+        t_on_segment = (-1 * tol) < segment_1_t < 1 + tol
 
-        u_is_endpoint = (segment_2_u == 0 or segment_2_u == -1*tol or segment_2_u ==
-                         tol) or (segment_2_u == 1-tol or segment_2_u == 1 or segment_2_u == 1+tol)
-        u_on_segment = segment_2_u >= (-1 * tol) and segment_2_u <= 1 + tol
+        u_is_endpoint = segment_2_u in (0, -1 * tol,
+                                        tol) or segment_2_u in (1 - tol, 1,
+                                                                1 + tol)
+        u_on_segment = (-1 * tol) <= segment_2_u <= 1 + tol
 
         # Corner cases
         # 1 Endpoint touching Endpoint
         # 2 Endpoint touching line (T-like shape)
+        # if (t_on_segment and u_on_segment):
+        #     return True
         if (t_is_endpoint and u_is_endpoint):
             return False
-        elif (t_on_segment and u_is_endpoint) or (t_is_endpoint and u_on_segment):
+        if (t_on_segment and u_is_endpoint) or (t_is_endpoint
+                                                and u_on_segment):
             return False
-        elif (t_on_segment and u_on_segment):
-            return True
-        else:
-            return False
+        return bool(t_on_segment and u_on_segment)
