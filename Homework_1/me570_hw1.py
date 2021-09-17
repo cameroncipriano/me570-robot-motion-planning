@@ -4,8 +4,8 @@ Test functions for HW1
 
 
 import numpy as np
-from numpy.lib.polynomial import poly
 import me570_robot as robot
+import matplotlib.pyplot as plt
 
 
 def polygon_is_visible_test():
@@ -39,12 +39,52 @@ def polygon_is_visible_test():
     test_points[1, :] -= 2  # low
 
     # Obtain polygon1 and polygon2
-    twoLink = robot.TwoLink()
-    robot_polygons = twoLink.polygons()
+    two_link = robot.TwoLink()
+    robot_polygons = two_link.polygons()
 
     for polygon in robot_polygons:
-        polygon.flip()
+        test_points_with_polygon = np.hstack((polygon.vertices, test_points))
+        plt.figure()
         polygon.plot([])
+        for i in range(polygon.vertices.shape[1]):
+            vertex = np.vstack(polygon.vertices[:, i])
+            for j in range(test_points_with_polygon.shape[1]):
+                point_to_test = np.vstack(test_points_with_polygon[:, j])
+                visible = polygon.is_visible(i, point_to_test)
+
+                values = np.hstack((vertex, point_to_test))
+                x_vals = values[0, :]
+                y_vals = values[1, :]
+
+                if visible[0]:
+                    plt.plot(x_vals, y_vals, 'g', marker='o', markeredgecolor='k',
+                             markerfacecolor='k', linewidth=1, alpha=0.8)
+                else:
+                    plt.plot(x_vals, y_vals, 'r', marker='o', markeredgecolor='k',
+                             markerfacecolor='k', linewidth=0.5, alpha=0.8)
+        plt.show()
+
+        polygon.flip()
+        plt.figure()
+        polygon.plot([])
+
+        for i in range(polygon.vertices.shape[1]):
+            vertex = np.vstack(polygon.vertices[:, i])
+            for j in range(test_points_with_polygon.shape[1]):
+                point_to_test = np.vstack(test_points_with_polygon[:, j])
+                visible = polygon.is_visible(i, point_to_test)
+
+                values = np.hstack((vertex, point_to_test))
+                x_vals = values[0, :]
+                y_vals = values[1, :]
+
+                if visible[0]:
+                    plt.plot(x_vals, y_vals, 'g', marker='o', markeredgecolor='k',
+                             markerfacecolor='k', linewidth=1, alpha=0.8)
+                else:
+                    plt.plot(x_vals, y_vals, 'r', marker='o', markeredgecolor='k',
+                             markerfacecolor='k', linewidth=0.5, alpha=0.8)
+        plt.show()
 
 
 def polygon_is_collision_test():
@@ -57,7 +97,137 @@ using Polygon.is_collision.
 otherwise.  Moreover, increase the number of test points from 5 to 100 (i.e.,  testPoints should
 have dimension [2 x 100]).
     """
-    pass  # Substitute with your code
+
+    test_points = np.random.rand(2, 100)
+
+    # Scale x coordinates to uniformly cover [0, 5)
+    test_points[0, :] *= 5
+
+    # Scale y coordinates to uniformly cover [-2, 2)
+    #   formula used: low + ((high - low) * random_value)
+    test_points[1, :] *= 4  # high - low
+    test_points[1, :] -= 2  # low
+
+    # Obtain polygon1 and polygon2
+    two_link = robot.TwoLink()
+    robot_polygons = two_link.polygons()
+
+    for polygon in robot_polygons:
+        test_points_with_polygon = np.hstack((polygon.vertices, test_points))
+        plt.figure()
+        polygon.plot([])
+        flagged_points = polygon.is_collision(test_points_with_polygon)
+
+        green_x = []
+        green_y = []
+        red_x = []
+        red_y = []
+
+        for i in range(len(flagged_points)):
+            x_point = test_points_with_polygon[0, i]
+            y_point = test_points_with_polygon[1, i]
+            if flagged_points[i] == True:
+                red_x.append(x_point)
+                red_y.append(y_point)
+            else:
+                green_x.append(x_point)
+                green_y.append(y_point)
+
+        plt.scatter(green_x, green_y, color='green')
+        plt.scatter(red_x, red_y, color='red')
+
+        plt.show()
+
+        green_x.clear()
+        green_y.clear()
+        red_x.clear()
+        red_y.clear()
+
+        polygon.flip()
+        plt.figure()
+        polygon.plot([])
+
+        flagged_points = polygon.is_collision(test_points_with_polygon)
+        for i in range(len(flagged_points)):
+            x_point = test_points_with_polygon[0, i]
+            y_point = test_points_with_polygon[1, i]
+            if flagged_points[i] == True:
+                red_x.append(x_point)
+                red_y.append(y_point)
+            else:
+                green_x.append(x_point)
+                green_y.append(y_point)
+
+        plt.scatter(green_x, green_y, color='green')
+        plt.scatter(red_x, red_y, color='red')
+
+        plt.show()
+
+    """
+    TESTING PLOT
+    """
+    # for polygon in robot_polygons:
+    #     polygon.plot([])
+    """
+    TESTING EDGE INTERSECTIONS
+    """
+    # edge1 = gm.Edge(np.array([[0, 3], [1, 1]]))
+    # edge2 = gm.Edge(np.array([[3, 3], [3, -1]]))
+
+    # print(
+    #     f"T-shape: Edge1: (0, 1)->(3, 1) Edge2: (3, 3)->(3, -1) {edge1.is_collision(edge2)}")
+
+    # edge2 = gm.Edge(np.array([[4, 3], [4, -1]]))
+    # print(
+    #     f"Non-intersection: Edge1: (0, 1)->(3, 1) Edge2: (4, 3)->(4, -1) {edge1.is_collision(edge2)}")
+
+    # edge2 = gm.Edge(np.array([[0, 0], [0, 0]]))
+    # print(
+    #     f"Edge2 is length 0: Edge1: (0, 1)->(3, 1) Edge2: (0, 0)->(0, 0) {edge1.is_collision(edge2)}")
+
+    """
+    TESTING POLYGON SELF-OCCLUSIONS
+    """
+
+    # polygon1, polygon2 = robot_polygons
+    # print(f"Polygon1 is filled: {polygon1.is_filled()}")
+    # for i in range(polygon1.vertices.shape[1]):
+    #     test_point = np.vstack((3, 0))
+    #     print(
+    #         f"vertex index {i}: Occluded with (3,0)? --> {polygon1.is_self_occcluded(i, test_point)}")
+
+    # polygon1.flip()
+    # print(f"Polygon1 is filled: {polygon1.is_filled()}")
+    # for i in range(polygon1.vertices.shape[1]):
+    #     test_point = np.vstack((3, 0))
+    #     print(
+    #         f"vertex index {i}: Occluded with (3,0)? --> {polygon1.is_self_occcluded(i, test_point)}")
+
+    # print(f"polygon2 vertices\n{polygon2.vertices}")
+    # print(f"Polygon2 is filled: {polygon2.is_filled()}")
+    # for i in range(polygon2.vertices.shape[1]):
+    #     test_point = np.vstack((3, 0))
+    #     print(
+    #         f"vertex index {i}: Occluded with (3,0)? --> {polygon2.is_self_occcluded(i, test_point)}\n")
+
+    # polygon2.flip()
+    # print(f"polygon2 vertices\n{polygon2.vertices}")
+    # print(f"Polygon1 is filled: {polygon2.is_filled()}")
+    # for i in range(polygon2.vertices.shape[1]):
+    #     test_point = np.vstack((3, 0))
+    #     print(
+    #         f"vertex index {i}: Occluded with (3,0)? --> {polygon2.is_self_occcluded(i, test_point)}\n")
+
+    """
+    TESTING IS_VISIBLE
+    """
+    # two_link = robot.TwoLink()
+    # polygon1, polygon2 = two_link.polygons()
+    # print(polygon1.is_filled())
+    # for i in range(polygon1.vertices.shape[1]):
+    #     test_point = np.vstack((3, 0))
+    #     print(
+    #         f"Polygon1 vertex {i} can see (3, 0)? - -> {polygon1.is_visible(i, test_point)}")
 
 
 def priority_test():
@@ -74,4 +244,5 @@ pQueue.
     pass  # Substitute with your code
 
 
-polygon_is_visible_test()
+# polygon_is_visible_test()
+polygon_is_collision_test()
