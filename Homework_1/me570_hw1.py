@@ -5,6 +5,7 @@ Test functions for HW1
 import numpy as np
 import matplotlib.pyplot as plt
 import me570_robot as robot
+import me570_queue as PriorityQueue
 
 
 def polygon_is_visible_test():
@@ -198,8 +199,29 @@ def priority_test():
  - Remove all elements by repeated extractions.  enumerate After each step, display the content of
 pQueue.
     """
-    return 1
+    my_queue = PriorityQueue.Priority()
+
+    my_queue.insert("Oranges", 4.5)
+    my_queue.insert("Apples", 1)
+    my_queue.insert("Bananas", 2.7)
+    print(*my_queue.queue, sep=", ")
+
+    key, cost = my_queue.min_extract()
+    print(f"({key}, {cost})")
+
+    my_queue.insert("Cantaloupe", 3)
+    print(*my_queue.queue, sep=", ")
+
+    print(f"Oranges is in my queue? --> {my_queue.is_member('Oranges')}")
+    print(f"Milk is in my queue? --> {my_queue.is_member('Milk')}")
+
+    while True:
+        (key, value) = my_queue.min_extract()
+        if (key is None and value is None):
+            break
+
+        print(f"Removed: ({key}, {value}) --> remaining: ", end=" ")
+        print(*my_queue.queue, sep=", ")
 
 
-polygon_is_visible_test()
-# polygon_is_collision_test()
+priority_test()
