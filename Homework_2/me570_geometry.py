@@ -7,6 +7,7 @@ import numbers
 import math
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.linalg import block_diag
 
 
 def numel(var):
@@ -35,9 +36,10 @@ def rot2d(theta):
 def line_linspace(a_line, b_line, t_min, t_max, nb_points):
     """
     Generates a discrete number of  nb_points points along the curve
-    (t)=( a(1)  t+ b(1), a(2) t+b(2))  R^2 for t ranging from  tMin to  tMax.
+    (t)=( a(1)t + b(1), a(2)t + b(2))  R^2 for t ranging from  tMin to  tMax.
     """
-    pass  # Substitute with your code
+    t_sequence = np.linspace(t_min, t_max, nb_points)
+    theta_points = a_line * t_sequence + b_line
     return theta_points
 
 
@@ -91,7 +93,16 @@ class Torus:
         """
         Implements equation (eq:chartTorus).
         """
-        pass  # Substitute with your code
+        x_torus = []
+        for i in range(theta.shape[1]):
+            curr_theta = theta[:, i]
+            phi_circle = rot2d(curr_theta[0]) @ np.vstack((1, 0))
+            phi_circle_mat = np.array([[1, 0], [0, 0], [0, 1]])
+            phi_circle_trans = np.vstack((3, 0, 0))
+            rot_xy_around_z = block_diag(rot2d(curr_theta[1]), 1)
+            x_torus.append(rot_xy_around_z @ (
+                (phi_circle_mat @ phi_circle) + phi_circle_trans))
+
         return x_torus
 
     def plot_charts(self):
@@ -106,7 +117,26 @@ class Torus:
         the overlap between the charts, you can use different colors each one of them,
         and making them slightly transparent.
         """
-        pass  # Substitute with your code
+        fun = lambda theta: self.phi(theta)
+        nb_grid = 33
+
+        u_subspace_1 = np.vstack(
+            (np.linspace(0, 2 * math.pi - 0.1,
+                         nb_grid), np.linspace(0, 2 * math.pi - 0.1, nb_grid)))
+
+        u_subspace_2 = np.vstack(
+            (np.linspace(0.1, 2 * math.pi,
+                         nb_grid), np.linspace(-math.pi, math.pi - 0.1,
+                                               nb_grid)))
+
+        u_subspace_3 = np.vstack(
+            (np.linspace(-math.pi, math.pi - 0.1,
+                         nb_grid), np.linspace(0, 2 * math.pi - 0.1, nb_grid)))
+
+        u_subspace_4 = np.vstack(
+            (np.linspace(-math.pi + 0.1, math.pi,
+                         nb_grid), np.linspace(-math.pi + 0.1, math.pi,
+                                               nb_grid)))
 
     def phi_push_curve(self, a_line, b_line):
         """
@@ -114,7 +144,13 @@ class Torus:
         generated along the curve phi(t) using line_linspaceLine.linspace with  tMin=0 and  tMax=1,
         and a, b as given in the input arguments.
         """
-        pass  # Substitute with your code
+        x_points = []
+        nb_points = 31
+        theta_sequence = line_linspace(a_line, b_line, 0, 1, nb_points)
+        for i in range(nb_points):
+            curr_theta = np.vstack(theta_sequence[:, i])
+            x_points.append(self.phi(curr_theta))
+
         return x_points
 
     def plot_charts_curves(self):
@@ -128,7 +164,17 @@ class Torus:
         - The output of Torus.plotCharts;
         - The output of the functions torus_pushCurveTorus.pushCurve for each one of the curves.
         """
-        pass  # Substitute with your code
+        a_lines = [
+            np.array([[3 / 4 * math.pi], [0]]),
+            np.array([[3 / 4 * math.pi], [3 / 4 * math.pi]]),
+            np.array([[-3 / 4 * math.pi], [3 / 4 * math.pi]]),
+            np.array([[0], [3 / 4 * math.pi]])
+        ]
+
+        b_line = np.array([[-1], [-1]])
+
+        for a_line in a_lines:
+            self.phi_push_curve(a_line, b_line)
 
 
 class Polygon:

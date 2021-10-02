@@ -37,6 +37,7 @@ def grid_eval_example():
     fig = plt.figure()
     axis = fig.add_subplot(111, projection='3d')
     axis.plot_surface(xx_grid, yy_grid, fun_eval)
+    plt.show()
 
 
 def torus_twolink_plot_jacobian():
@@ -52,4 +53,28 @@ subplot) showing all the configurations of the manipulator superimposed on each 
 matplotlib.pyplot.ion and insert a time.sleep command in the loop for drawing the manipulator, in
 order to obtain a ``movie-like'' presentation of the motion.
     """
-    pass  # Substitute with your code
+    return 1
+
+
+def tester_program():
+
+    # robot = me570_robot.TwoLink()
+
+    # plt.figure()
+    # ax = plt.gca()
+    # ax.axis('equal')
+
+    # zero_to_3pi_4 = np.arange(0, 3 * math.pi / 2, math.pi / 4)
+    # configuration = np.vstack((zero_to_3pi_4, [3 * math.pi / 4] * 6))
+    # test_points = np.array([[1, 0, -4, 7, -7.5, -5, 0, 5],
+    #                         [2, -3, 2, 4, 2.1, 4.5, 8, -5]])
+    # robot.plot_collision(configuration, test_points)
+
+    # plt.show()
+
+    torus = me570_geometry.Torus()
+    torus.plot_charts()
+
+
+tester_program()
+# grid_eval_example()
