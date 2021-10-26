@@ -2,9 +2,9 @@
  Please merge the functions and classes from this file with the same file from the previous
  homework assignment
 """
+import math
 import numpy as np
 import matplotlib.pyplot as plt
-import math
 import me570_geometry as gm
 
 
