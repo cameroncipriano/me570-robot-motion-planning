@@ -205,11 +205,15 @@ class Sphere:
             return -d_points_sphere
         return d_points_sphere
 
-    def distance_grad(self, sphere, points):
+    def distance_grad(self, points):
         """
     Computes the gradient of the signed distance between points and the sphere, consistently with
     the definition of Sphere.distance.
         """
+        denom = np.linalg.norm(points - self.center, axis=0)
+        if not all(denom):
+            return np.zeros((2, 1))
+
         grad_d_points_sphere = (points - self.center) / np.linalg.norm(
             points - self.center, axis=0)
 

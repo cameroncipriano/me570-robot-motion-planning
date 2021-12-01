@@ -6,6 +6,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import me570_geometry as gm
+import me570_potential as pot
 
 
 class TwoLink:
@@ -131,7 +132,7 @@ class TwoLink:
         Implement the map for the Jacobian of the position of the end effector with respect to the
         joint angles as derived in Question~ q:jacobian-effector.
         """
-        vertex_effector_dot = []
+        vertex_effector_dot = np.zeros((2, theta.shape[1]))
 
         for i in range(theta.shape[1]):
             curr_theta = theta[:, i]
@@ -144,29 +145,37 @@ class TwoLink:
             cos_theta_2 = math.cos(curr_theta[1])
 
             derivative_at_point = (5 * np.array(
-                [[
-                    -sin_theta_1 * cos_theta_2 - cos_theta_1 * sin_theta_2 -
-                    sin_theta_1, -cos_theta_1 * sin_theta_2 -
-                    sin_theta_1 * cos_theta_2 + cos_theta_1
-                ],
-                 [
-                     cos_theta_1 * cos_theta_2 - sin_theta_1 * sin_theta_2 +
-                     cos_theta_1, -sin_theta_1 * sin_theta_2 +
-                     cos_theta_1 * cos_theta_2 + sin_theta_1
-                 ]])) @ curr_theta_dot
+                [[(-sin_theta_1 * cos_theta_2 - cos_theta_1 * sin_theta_2) -
+                  sin_theta_1,
+                  (-cos_theta_1 * sin_theta_2 - sin_theta_1 * cos_theta_2) +
+                  cos_theta_1],
+                 [(cos_theta_1 * cos_theta_2 - sin_theta_1 * sin_theta_2) +
+                  cos_theta_1,
+                  (-sin_theta_1 * sin_theta_2 + cos_theta_1 * cos_theta_2) +
+                  sin_theta_1]])) @ curr_theta_dot
 
-            vertex_effector_dot.append(derivative_at_point)
+            vertex_effector_dot[:, i] = (derivative_at_point).T
 
         return vertex_effector_dot
-
-    """ See description from previous homework assignments. """
 
     def jacobian_matrix(self, theta):
         """
         Compute the matrix representation of the Jacobian of the position of the end effector with
     respect to the joint angles as derived in Question~ q:jacobian-matrix.
         """
-        pass  # Substitute with your code
+        sin_1 = math.sin(theta[0, 0])
+        cos_1 = math.cos(theta[0, 0])
+
+        sin_2 = math.sin(theta[1, 0])
+        cos_2 = math.cos(theta[1, 0])
+
+        jtheta = np.zeros((2, 2))
+
+        jtheta[0, 0] = 5 * (-sin_1 * cos_2 - cos_1 * sin_2) - (5 * sin_1)
+        jtheta[0, 1] = 5 * (-cos_1 * sin_2 - sin_1 * cos_2) + (5 * cos_1)
+        jtheta[1, 0] = 5 * (cos_1 * cos_2 - sin_1 * sin_2) + (5 * cos_1)
+        jtheta[1, 1] = 5 * (-sin_1 * sin_2 + cos_1 * cos_2) + (5 * sin_1)
+
         return jtheta
 
 
@@ -176,7 +185,10 @@ class TwoLinkPotential:
         """
         Save the arguments to internal attributes
         """
-        pass  # Substitute with your code
+        self.world = world
+        self.potential = potential
+        self.robot = TwoLink()
+        self.total_pot = pot.Total(world, potential)
 
     def eval(self, theta_eval):
         """
@@ -184,7 +196,13 @@ class TwoLinkPotential:
     U(  Wp_ eff(  )), where U is defined as in Question~ q:total-potential, and   Wp_ eff( ) is the
     position of the end effector in the world frame as a function of the joint angles   = _1\\ _2.
         """
-        pass  # Substitute with your code
+
+        # Transform the coordinates of the end effector into the world
+        transf_end_effector, _, _ = self.robot.kinematic_map(theta_eval)
+
+        # evaluate the potential at the coordinate in the world
+        u_eval_theta = self.total_pot.eval(transf_end_effector)
+
         return u_eval_theta
 
     def grad(self, theta_eval):
@@ -192,10 +210,16 @@ class TwoLinkPotential:
     Compute the gradient of the potential U pulled back through the kinematic map of the two-link
     manipulator, i.e.,  _   U(  Wp_ eff(  )).
         """
-        pass  # Substitute with your code
+        # Transform the coordinates of the end effector into the world
+        trans_end_effector, _, _ = self.robot.kinematic_map(theta_eval)
+
+        # evaluate the potential gradient at the coordinate in the world
+        grad_u_eval_theta = (
+            self.total_pot.grad(trans_end_effector).T
+            @ self.robot.jacobian_matrix(trans_end_effector)).T
         return grad_u_eval_theta
 
-    def run_plot(self, plannerParameters):
+    def run_plot(self, planner_parameters):
         """
     This function performs the same steps as Planner.run_plot in Question~ q:potentialPlannerTest,
     except for the following:
@@ -208,4 +232,3 @@ class TwoLinkPotential:
     of join angles, rather than a sequence of 2-D points. Plot only every 5th or 10th column of
     xPath (e.g., use  xPath(:,1:5:end)). To avoid clutter, plot a different figure for each start.
         """
-        pass  # Substitute with your code
