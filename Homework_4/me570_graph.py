@@ -3,10 +3,12 @@ Classes and utility functions for working with graphs (plotting, search, initial
 """
 
 import pickle
-from math import pi
+from math import pi, isnan
 from matplotlib import pyplot as plt
 import numpy as np
 import me570_geometry
+from me570_queue import Priority
+import me570_potential as pot
 
 
 def plot_arrows_from_list(arrow_list, scale=1.0, color=(0., 0., 0.)):
@@ -195,20 +197,50 @@ class Graph:
         h_val = np.linalg.norm(goal_coords - node_coords)
         return h_val
 
-    def get_expand_list(self, idx_n_best, idx_closed):
+    def get_expand_list(self, idx_n_best: int, idx_closed: list) -> list:
         """
         Finds the neighbors of element  idx_n_best that are not in  idx_closed (line   in Algorithm~
         ).
         """
-        pass  # Substitute with your code
+        if not 0 <= idx_n_best < len(self.graph_vector):
+            raise ValueError(
+                f"idx_n_best '{idx_n_best}' is not a valid index in the graph")
+
+        curr_node_neighbors = self.graph_vector[idx_n_best]["neighbors"]
+        idx_expand = [
+            index for index in curr_node_neighbors if index not in idx_closed
+        ]
         return idx_expand
 
-    def expand_element(self, idx_n_best, idx_x, idx_goal, pq_open):
+    def expand_element(self, idx_n_best: int, idx_x: int, idx_goal: int,
+                       pq_open: Priority) -> Priority:
         """
         This function expands the vertex with index  idx_x (which is a neighbor of the one with
         index  idx_n_best) and returns the updated versions of  graph_vector and  pq_open.
         """
-        pass  # Substitute with your code
+
+        # g is purely previous g with neighbors_cost
+        # f(n) = g(n) + h(n) --> Priority Queue
+
+        n_best_node = self.graph_vector[idx_n_best]
+        x_node = self.graph_vector[idx_x]
+
+        g_n_best = n_best_node['g']
+
+        c_best_to_x = n_best_node['neighbors_cost'][
+            n_best_node["neighbors"].index(idx_x)]
+
+        updated_g = g_n_best + c_best_to_x
+        f_n = updated_g + self.heuristic(idx_x, idx_goal)
+
+        if not pq_open.is_member(idx_x):
+            x_node['g'] = updated_g
+            x_node['backpointer'] = idx_n_best
+            pq_open.insert(idx_x, f_n)
+        elif updated_g < x_node['g']:
+            x_node['g'] = updated_g
+            x_node['backpointer'] = idx_n_best
+
         return pq_open
 
     def path(self, idx_start, idx_goal):
@@ -217,14 +249,46 @@ class Graph:
         to the one with index  idx_start node, and returns the  coordinates (not indexes) of the
         sequence of traversed elements.
         """
-        pass  # Substitute with your code
+        x_path = self.graph_vector[idx_goal]['x']
+        idx_current = self.graph_vector[idx_goal]['backpointer']
+        while idx_current != idx_start:
+            x_path = np.hstack((self.graph_vector[idx_current]['x'], x_path))
+            idx_current = self.graph_vector[idx_current]['backpointer']
+        x_path = np.hstack((self.graph_vector[idx_current]['x'], x_path))
         return x_path
 
     def search(self, idx_start, idx_goal):
         """
         Implements the  A^* algorithm, as described by the pseudo-code in Algorithm~ .
         """
-        pass  # Substitute with your code
+        # Initialize every node to have 0 backpointer cost and no backpointer
+        for node in self.graph_vector:
+            node['g'] = 0.0
+            node['backpointer'] = None
+
+        priority_queue = Priority()
+        priority_queue.insert(idx_start, 0)
+
+        idx_closed = []
+        i = 0
+        i_max = 100000
+
+        while priority_queue.queue:
+            idx_best, _ = priority_queue.min_extract()
+            idx_closed.append(idx_best)
+            if idx_best == idx_goal:
+                break
+
+            unexplored_neighbors = self.get_expand_list(idx_best, idx_closed)
+
+            for _, neighbor_node in enumerate(unexplored_neighbors):
+                priority_queue = self.expand_element(idx_best, neighbor_node,
+                                                     idx_goal, priority_queue)
+            if i >= i_max:
+                break
+            i += 1
+
+        x_path = self.path(idx_start, idx_goal)
         return x_path
 
     def search_start_goal(self, x_start, x_goal):
@@ -237,7 +301,10 @@ class Graph:
          - Appends  x_start and  x_goal, respectively, to the beginning and the end of the array
         x_path.
         """
-        pass  # Substitute with your code
+        idx_start = self.nearest_neighbors(x_start, 1)[0]
+        idx_goal = self.nearest_neighbors(x_goal, 1)[0]
+        x_path = self.search(idx_start, idx_goal)
+
         return x_path
 
 
@@ -262,7 +329,21 @@ function.
          - Call grid2graph.
          - Store the resulting  graph object as an internal attribute.
         """
-        self.graph = None  # Substitute with your code
+        self.world = pot.SphereWorld()
+        self.grid = me570_geometry.Grid(xx_grid=np.linspace(-10, 10, nb_cells),
+                                        yy_grid=np.linspace(-10, 10, nb_cells))
+
+        potential = {
+            'shape': 'conic',
+            'x_goal': np.vstack(self.world.x_goal[:, 0]),
+            'repulsive_weight': 10
+        }
+        world_potential = pot.Total(self.world, potential)
+
+        f_handle_total = lambda point: not isnan(world_potential.eval(point))
+        self.grid.eval(f_handle_total)
+
+        self.graph = grid2graph(self.grid)
 
     def plot(self):
         """
@@ -275,7 +356,13 @@ function.
         - Load the variables  x_start,  x_goal from the internal attribute  sphereworld.
         homework4_sphereworldPlot
         """
-        pass  # Substitute with your code
+        for goal in self.world.x_goal.T:
+            goal = goal.reshape(-1, 1)
+            self.plot()
+            for start in self.world.x_start.T:
+                start = start.reshape(-1, 1)
+                x_path = self.graph.search_start_goal(start, goal)
+                plt.plot(x_path[0, :], x_path[1, :], 'r')
 
 
 def graph_load_test_data(variable_name):
@@ -287,7 +374,7 @@ def graph_load_test_data(variable_name):
     return saved_data[variable_name]
 
 
-def grid2graph(grid):
+def grid2graph(grid: me570_geometry.Grid) -> Graph:
     """
     The function returns a  Graph object described by the inputs. See Figure~  for an example of the
     expected inputs and outputs.
