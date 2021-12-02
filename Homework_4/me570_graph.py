@@ -175,12 +175,24 @@ class Graph:
         idx = np.argpartition(distances_squared, k_nearest)
         return idx[:k_nearest]
 
-    def heuristic(self, idx_x, idx_goal):
+    def heuristic(self, idx_x: int, idx_goal: int) -> float:
         """
         Computes the heuristic  h given by the Euclidean distance between the nodes with indexes
         idx_x and  idx_goal.
         """
-        pass  # Substitute with your code
+        # Ensures the passed
+        if not 0 <= idx_x < len(self.graph_vector):
+            raise ValueError(
+                f"idx_x passed '{idx_x}' is not a valid index in the graph")
+
+        if not 0 <= idx_goal < len(self.graph_vector):
+            raise ValueError(
+                f"idx_goal passed '{idx_goal}' is not a valid index in the graph"
+            )
+
+        node_coords = self.graph_vector[idx_x]['x']
+        goal_coords = self.graph_vector[idx_goal]['x']
+        h_val = np.linalg.norm(goal_coords - node_coords)
         return h_val
 
     def get_expand_list(self, idx_n_best, idx_closed):
