@@ -32,8 +32,13 @@ def main():
     # graph.Graph(graph.graph_load_test_data("graphVectorMedium_solved")).plot()
     # plt.show()
 
-    sphere_world = SphereWorldGraph(20)
-    sphere_world.run_plot()
+    # sphere_world = SphereWorldGraph(20)
+    # sphere_world.plot()
+    # plt.show()
+    # sphere_world.run_plot()
+
+    my_robot_graph = robot.TwoLinkGraph()
+    my_robot_graph.plot()
     plt.show()
 
 

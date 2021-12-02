@@ -349,7 +349,7 @@ function.
         """
         Plots the graph attribute
         """
-        self.graph.plot()
+        self.graph.plot(flag_backpointers_cost=False)
 
     def run_plot(self):
         """
@@ -358,11 +358,12 @@ function.
         """
         for goal in self.world.x_goal.T:
             goal = goal.reshape(-1, 1)
-            self.plot()
             for start in self.world.x_start.T:
                 start = start.reshape(-1, 1)
                 x_path = self.graph.search_start_goal(start, goal)
                 plt.plot(x_path[0, :], x_path[1, :], 'r')
+            self.plot()
+            plt.show()
 
 
 def graph_load_test_data(variable_name):
@@ -422,9 +423,12 @@ def grid2graph(grid: me570_geometry.Grid) -> Graph:
     # Cannot be done in the loop above because not all 'x' fields would be filled
     for idx, n_current in enumerate(graph_vector):
         x_current = n_current['x']
-        x_neighbors = np.hstack(
-            [graph_vector[idx]['x'] for idx in n_current['neighbors']])
-        neighbors_cost_np = np.sum((x_neighbors - x_current)**2, 0)
+        if not n_current['neighbors']:
+            neighbors_cost_np = []
+        else:
+            x_neighbors = np.hstack(
+                [graph_vector[idx]['x'] for idx in n_current['neighbors']])
+            neighbors_cost_np = np.sum((x_neighbors - x_current)**2, 0)
         graph_vector[idx]['neighbors_cost'] = list(neighbors_cost_np)
 
     return Graph(graph_vector)

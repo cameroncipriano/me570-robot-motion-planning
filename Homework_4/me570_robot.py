@@ -229,7 +229,7 @@ class TwoLinkGraph:
 discretization and  A^*.
     """
     def __init__(self) -> None:
-        self.graph = None
+        self.graph = self.load_free_space_graph()
 
     def load_free_space_graph(self):
         """
@@ -239,7 +239,7 @@ discretization and  A^*.
          - Stores the resulting  graph object of class  Grid as an internal attribute.
         """
         grid = load_free_space_grid()
-        self.graph = grid2graph(grid)
+        return grid2graph(grid)
 
     def plot(self):
         """
@@ -261,6 +261,7 @@ Loads the contents of the file ! twolink_freeSpace_data.mat
     """
     test_data = scio.loadmat('twolink_freeSpace_data.mat')
     test_data = test_data['grid'][0][0]
-    grid = me570_geometry.Grid(test_data[0], test_data[1])
+    grid = me570_geometry.Grid(test_data[0][0], test_data[1][0])
+
     grid.fun_evalued = test_data[2]
     return grid
