@@ -1,7 +1,6 @@
 """
 Combine the classes below with the file me570_robot.py from previous assignments
 """
-from time import sleep
 import math
 from scipy import io as scio
 import numpy as np
