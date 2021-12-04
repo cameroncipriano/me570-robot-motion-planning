@@ -250,11 +250,12 @@ class Graph:
         sequence of traversed elements.
         """
         x_path = self.graph_vector[idx_goal]['x']
-        idx_current = self.graph_vector[idx_goal]['backpointer']
-        while idx_current != idx_start:
-            x_path = np.hstack((self.graph_vector[idx_current]['x'], x_path))
-            idx_current = self.graph_vector[idx_current]['backpointer']
-        x_path = np.hstack((self.graph_vector[idx_current]['x'], x_path))
+        curr_backpointer = self.graph_vector[idx_goal]['backpointer']
+        while curr_backpointer != idx_start:
+            x_path = np.hstack(
+                (self.graph_vector[curr_backpointer]['x'], x_path))
+            curr_backpointer = curr_backpointer['backpointer']
+        x_path = np.hstack((self.graph_vector[curr_backpointer]['x'], x_path))
         return x_path
 
     def search(self, idx_start, idx_goal):
