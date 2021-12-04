@@ -1,7 +1,7 @@
 """
 Combine the classes below with the file me570_robot.py from previous assignments
 """
-
+from time import sleep
 import math
 from scipy import io as scio
 import numpy as np
@@ -76,14 +76,21 @@ class TwoLink:
 
         return vertex_effector_transf, polygon1_transf, polygon2_transf
 
-    def plot(self, theta, color):
+    def plot(self, theta, color=None):
         """
         This function should use TwoLink.kinematic_map from the previous question together with
         the method Polygon.plot from Homework 1 to plot the manipulator.
         """
+        if not color:
+            color = []
         [_, polygon1_transf, polygon2_transf] = self.kinematic_map(theta)
         polygon1_transf.plot(color)
         polygon2_transf.plot(color)
+
+    def plot_animate(self, theta_path):
+        for theta in theta_path.T:
+            theta = np.vstack(theta)
+            self.plot(theta)
 
     def is_collision(self, theta, points):
         """
@@ -245,7 +252,7 @@ discretization and  A^*.
         """
         Use the method Graph.plot to visualize the contents of the attribute  graph.
         """
-        self.graph.plot()
+        self.graph.plot(flag_backpointers_cost=False)
 
     def search_start_goal(self, theta_start, theta_goal):
         """

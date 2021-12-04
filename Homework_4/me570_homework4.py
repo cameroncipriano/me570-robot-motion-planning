@@ -1,6 +1,9 @@
+from math import pi
+import matplotlib.pyplot as plt
+from scipy import io as scio
+import numpy as np
 import me570_graph as graph
 import me570_robot as robot
-import matplotlib.pyplot as plt
 from me570_queue import Priority
 from me570_graph import SphereWorldGraph
 
@@ -32,13 +35,40 @@ def main():
     # graph.Graph(graph.graph_load_test_data("graphVectorMedium_solved")).plot()
     # plt.show()
 
-    # sphere_world = SphereWorldGraph(20)
+    sphere_world = SphereWorldGraph(20)
     # sphere_world.plot()
     # plt.show()
     # sphere_world.run_plot()
 
+    test_data = scio.loadmat("twolink_testData.mat")
+    test_points = test_data['obstaclePoints']
+
+    # theta = np.vstack((0, 0))
+    # for angle in np.linspace(0, 2 * pi, 15):
+    #     theta = np.hstack((theta, np.vstack((angle, pi / 7))))
+
+    my_robot = robot.TwoLink()
     my_robot_graph = robot.TwoLinkGraph()
     my_robot_graph.plot()
+    # plt.scatter(test_points[0, :],
+    #             test_points[1, :],
+    #             c='r',
+    #             marker='x',
+    #             linewidths=0.5)
+
+    # Easy case
+    # theta_start = np.vstack((0.76, 0.12))
+    # theta_goal = np.vstack((0.76, 6.00))
+
+    # Medium Case
+    theta_start = np.vstack((0.76, 0.12))
+    theta_goal = np.vstack((2.72, 5.45))
+
+    theta_path = my_robot_graph.search_start_goal(theta_start, theta_goal)
+    plt.plot(theta_path[0, :], theta_path[1, :], 'r')
+    my_robot_graph.plot()
+
+    # my_robot.plot_animate(theta_path)
     plt.show()
 
 
