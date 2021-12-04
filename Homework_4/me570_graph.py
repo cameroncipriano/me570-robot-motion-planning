@@ -250,12 +250,15 @@ class Graph:
         sequence of traversed elements.
         """
         x_path = self.graph_vector[idx_goal]['x']
-        curr_backpointer = self.graph_vector[idx_goal]['backpointer']
-        while curr_backpointer != idx_start:
-            x_path = np.hstack(
-                (self.graph_vector[curr_backpointer]['x'], x_path))
-            curr_backpointer = curr_backpointer['backpointer']
-        x_path = np.hstack((self.graph_vector[curr_backpointer]['x'], x_path))
+        curr_bp = self.graph_vector[idx_goal]['backpointer']
+
+        while curr_bp != idx_start:
+            x_path = np.hstack((self.graph_vector[curr_bp]['x'], x_path))
+            curr_bp = self.graph_vector[curr_bp]['backpointer']
+        # Make sure to grab the final element which will be the start vector since the while loop
+        # will termiante at the first element
+        x_path = np.hstack((self.graph_vector[curr_bp]['x'], x_path))
+
         return x_path
 
     def search(self, idx_start, idx_goal):
